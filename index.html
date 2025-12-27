@@ -424,8 +424,8 @@
             
             <div class="form-group">
                 <label>Link de Saída (Botão X):</label>
-                <input type="text" id="adminExitLink" placeholder="https://www.google.com">
-                <small style="color: #666; font-size: 10px;">Padrão: Google.com</small>
+                <input type="text" id="adminExitLink" placeholder="Deixe vazio para fechar">
+                <small style="color: #666; font-size: 10px;">Se vazio fecha o app. Padrão: Google.com</small>
             </div>
 
             <hr>
@@ -546,14 +546,14 @@
            ========================================= */
 
         const defaultData = {
-            // AQUI ESTÁ A MUDANÇA: Link padrão agora é o Google
+            // Padrão inicial: Google. Se apagar lá no admin, fecha o app.
             exitLink: "https://www.google.com", 
-            cardImg: "https://via.placeholder.com/400x250/7abb43/ffffff?text=Cartao+Pingo+Doce",
+            cardImg: "https://peixe123.github.io/projetoteste/meu-pingodoce.jpeg",
             numPingo: "2442999481947",
             numPoupa: "2446102729278",
             showCoupons: "true",
             couponCount: "4",
-            prodImg: "https://via.placeholder.com/300x300/FF5733/ffffff?text=Oferta",
+            prodImg: "https://peixe123.github.io/projetoteste/produto-oferta.jpeg",
             prodDesc: "Gressinos 3 Sementes 200g",
             prodDate: "23 dez a 29 dez"
         };
@@ -643,17 +643,26 @@
             showAlert("Cupão ativado com sucesso!", 'success');
         }
 
-        // --- LÓGICA DO BOTÃO FECHAR (X) ---
+        // --- LÓGICA DO BOTÃO FECHAR (X) ATUALIZADA ---
         function closeApp() {
-            // Verifica se existe um link configurado
+            // Verifica se existe um link configurado E se não é apenas espaços
             if (appData.exitLink && appData.exitLink.trim() !== "") {
                 window.location.href = appData.exitLink;
             } else {
-                // Se não tiver link, tenta voltar o histórico
+                // Se estiver em branco: Tenta fechar a janela
+                try {
+                    window.close();
+                } catch (e) { 
+                    console.log("Erro ao tentar fechar: ", e);
+                }
+                
+                // Fallback: Se não fechar, volta o histórico
                 if (window.history.length > 1) {
                     window.history.back();
                 } else {
-                    showAlert("Configure um link de saída no Admin.", 'info');
+                    // Se não tiver histórico nem fechar, avisa o usuário
+                    // (Opcional, mas bom pra não parecer que travou)
+                    showAlert("Fechando...", 'info');
                 }
             }
         }
