@@ -425,7 +425,7 @@
             <div class="form-group">
                 <label>Link de Saída (Botão X):</label>
                 <input type="text" id="adminExitLink" placeholder="https://www.google.com">
-                <small style="color: #666; font-size: 10px;">Se vazio, tenta voltar a página.</small>
+                <small style="color: #666; font-size: 10px;">Padrão: Google.com</small>
             </div>
 
             <hr>
@@ -546,7 +546,8 @@
            ========================================= */
 
         const defaultData = {
-            exitLink: "", // Link padrão vazio
+            // AQUI ESTÁ A MUDANÇA: Link padrão agora é o Google
+            exitLink: "https://www.google.com", 
             cardImg: "https://via.placeholder.com/400x250/7abb43/ffffff?text=Cartao+Pingo+Doce",
             numPingo: "2442999481947",
             numPoupa: "2446102729278",
