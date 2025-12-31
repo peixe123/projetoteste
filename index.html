@@ -61,32 +61,11 @@
         .prod-img-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .prod-info { flex: 0 0 50%; width: 50%; padding: 12px 15px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; position: relative; }
         
-        .prod-date-badge { 
-            font-size: 12px; 
-            margin-bottom: 6px; 
-            padding: 4px 10px; 
-            border-radius: 12px; 
-            display: inline-block;
-            line-height: 1.2;
-        }
-
+        .prod-date-badge { font-size: 12px; margin-bottom: 6px; padding: 4px 10px; border-radius: 12px; display: inline-block; line-height: 1.2; }
         .fallback-phone-img { width: 100%; height: 100%; object-fit: contain; display: block; }
-
         .prod-desc { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; line-height: 1.2; width: 100%; }
         
-        /* CORREÇÃO AQUI: REMOVIDO O 'text-transform: uppercase' */
-        .btn-activate { 
-            border: none; 
-            padding: 8px 0; 
-            border-radius: 4px; 
-            font-size: 13px; /* Aumentei um tiquinho pra ficar legível */
-            width: 100%; 
-            text-align: center; 
-            cursor: pointer; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            transition: opacity 0.2s; 
-            /* text-transform: uppercase; <- ESTAVA AQUI O VILÃO */ 
-        }
+        .btn-activate { border: none; padding: 8px 0; border-radius: 4px; font-size: 13px; width: 100%; text-align: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s; }
         .btn-activate:active { opacity: 0.8; }
 
         .zoom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; align-items: center; justify-content: center; flex-direction: column; }
@@ -94,15 +73,22 @@
         .zoom-img { width: 90vw; transform: rotate(90deg); max-height: 80vw; object-fit: contain; }
         .zoom-close { position: absolute; top: 20px; right: 20px; font-size: 30px; background: none; border: none; color: #333; }
 
+        /* ADMIN PANEL (PREFERÊNCIAS) */
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; }
         .admin-content { background: #fff; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; padding: 20px; border-radius: 12px; }
         .admin-content h2 { margin-top: 0; color: var(--dark-green); font-size: 18px; margin-bottom: 10px; }
+        
+        /* GENERATOR MODAL (NOVO) */
+        #generatorModal { z-index: 3500 !important; }
+        .generator-code-area { width: 100%; height: 120px; background: #222; color: #0f0; font-family: monospace; font-size: 11px; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
+
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333; }
-        .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
         
         .btn-save { background: var(--primary-green); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 15px; }
         .btn-cancel { background: #ccc; color: #333; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; margin-top: 10px; }
+        .btn-owner { background: #d32f2f; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 25px; margin-bottom: 10px; border: 1px dashed #b71c1c; }
 
         #refresh-bar-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 6px; background-color: #e0e0e0; z-index: 9999; }
         #refresh-bar { height: 100%; background-color: #5e8e3e; width: 100%; }
@@ -144,7 +130,42 @@
             </div>
 
             <button class="btn-save" onclick="saveUserData()">Salvar Minhas Preferências</button>
-            <button class="btn-cancel" onclick="toggleAdmin(false)">Cancelar</button>
+            
+            <button class="btn-owner" onclick="openGenerator()">🛠️ Área do Desenvolvedor (Gerar Código)</button>
+            
+            <button class="btn-cancel" onclick="toggleAdmin(false)">Fechar</button>
+        </div>
+    </div>
+
+    <div id="generatorModal" class="admin-panel">
+        <div class="admin-content">
+            <h2 style="color: #d32f2f;">Gerador de Promoção</h2>
+            <p style="font-size:11px; color:#666;">Preencha e gere o código para colar no topo do arquivo.</p>
+
+            <div class="form-group">
+                <label>Início da Promoção:</label>
+                <input type="datetime-local" id="genStart">
+            </div>
+            <div class="form-group">
+                <label>Fim da Promoção:</label>
+                <input type="datetime-local" id="genEnd">
+            </div>
+            <div class="form-group">
+                <label>Texto do Botão:</label>
+                <input type="text" id="genBtnText" placeholder="Ex: Ver código">
+            </div>
+            <div class="form-group">
+                <label>Nome do Produto:</label>
+                <input type="text" id="genProdDesc" placeholder="Ex: Café...">
+            </div>
+            <div class="form-group">
+                <label>Imagem do Produto (URL):</label>
+                <input type="text" id="genProdImg">
+            </div>
+            
+            <button class="btn-save" style="background:#d32f2f;" onclick="generatePromoCode()">Gerar Código Agora</button>
+            <textarea id="generatedCode" class="generator-code-area" readonly placeholder="O código aparecerá aqui..."></textarea>
+            <button class="btn-cancel" onclick="document.getElementById('generatorModal').style.display='none'">Voltar</button>
         </div>
     </div>
 
@@ -203,7 +224,7 @@
                     <div class="prod-info" id="prodInfoContainer">
                         <div id="displayProdDate" class="prod-date-badge"></div>
                         <div class="prod-desc" id="displayProdDesc"></div>
-                        <button id="btnActivate" class="btn-activate" onclick="activateCoupon()">ATIVAR CUPÃO</button>
+                        <button id="btnActivate" class="btn-activate" onclick="activateCoupon()">...</button>
                     </div>
                 </div>
             </div>
@@ -213,79 +234,39 @@
 
     <script>
         /* ========================================================================================
-                                      CENTRAL DE CONTROLE DO ADMIN
+           🚨 ÁREA DE COLAGEM DO CÓDIGO (PASTE AREA) 🚨
+           Use o Gerador (Engrenagem -> Área do Desenvolvedor) para criar o código e cole AQUI:
            ======================================================================================== */
-
-        /* INSTRUÇÕES:
-            Aqui você edita tudo o que aparece na tela. Não altere nada fora desta área demarcada.
-            Respeite as aspas "" nos textos e links.
-        */
 
         const serverStyle = {
-            // ===========================================================
-            // PASSO 1: QUANDO COMEÇA E QUANDO ACABA A PROMOÇÃO?
-            // Formato Obrigatório: "ANO-MÊS-DIA T HORA:MINUTO:SEGUNDO"
-            // ===========================================================
-            
-            promoStart: "2025-12-30T00:00:00",   // Data de Início
-            promoEnd:   "2026-01-05T23:59:59",   // Data do Fim (Quando expira)
-
-            // ===========================================================
-            // PASSO 2: IMAGENS QUANDO A PROMOÇÃO ACABAR (MODO EXPIRADO)
-            // ===========================================================
-            
-            fallbackImgCar: "https://peixe123.github.io/pingodoce/pingo-doce-abastecimento2.jpg",
-            fallbackImgPhone: "https://peixe123.github.io/pingodoce/pingodoce_telemóvel-2.png",
-
-            // ===========================================================
-            // PASSO 3: CORES E ESTILO
-            // ===========================================================
-            
-            // Cores do Aviso "Expira Amanhã"
-            badgeBg: "#fce4ec",        // Cor do Fundo (Rosa claro)
-            badgeColor: "#c62828",     // Cor do Texto (Vermelho)
-            badgeBold: true,           // Negrito?
-            badgeItalic: false,        // Itálico?
-
-            // Cores e Texto do Botão
-            btnBg: "#5e8e3e",          // Cor do Fundo (Verde)
-            btnColor: "#ffffff",       // Cor do Texto (Branco)
-            btnBold: true,
-            btnItalic: false,
-            
-            // ---> EDITE AQUI A FRASE DO BOTÃO <---
-            // Agora aceita minúsculas (ex: "Ver código" ou "Ativar cupão")
-            btnText: "Ver código" 
-        };
-
-        const serverData = {
-            // Link para onde vai ao fechar o app (Google)
-            exitLink: "https://www.google.com",
-            
-            // ===========================================================
-            // PASSO 4: TEXTOS DA OFERTA (QUANDO ESTÁ ATIVA)
-            // ===========================================================
-            
-            couponCount: "1 cupão ativo",                 // Topo (Bolinha verde)
-            offerTitle: "Mais 2 cupões disponíveis",        // Texto abaixo da bolinha
-            sectionTitle: "Cupões Pingo Doce",              // Título da seção branca
-            prodDesc: "Máquina Café Coffesmart Dona Bica Pingo Doce",          // Nome do produto
-            prodImg: "https://peixe123.github.io/pingodoce/produto-oferta.jpeg", 
-
-            // ===========================================================
-            // PASSO 5: TEXTOS DA OFERTA (QUANDO ESTIVER EXPIRADA)
-            // ===========================================================
-            
-            expiredCouponCount: "ver cupões ativos",        // Topo (Bolinha verde)
-            expiredOfferTitle: "ver cupões disponíveis"     // Texto abaixo da bolinha
-        };
+               promoStart: "2025-12-30T00:00",
+               promoEnd: "2026-01-05T23:59",
+               badgeBg: "#fce4ec",
+               badgeColor: "#c62828",
+               btnBg: "#5e8e3e",
+               btnColor: "#ffffff",
+               btnText: "Ver código"
+           };
+           
+           const serverData = {
+               couponCount: "1 cupão ativo",
+               offerTitle: "Mais 2 cupões disponíveis",
+               sectionTitle: "Cupões Pingo Doce",
+               prodDesc: "Máquina Café Coffesmart Dona Bica Pingo Doce",
+               prodImg: "https://peixe123.github.io/pingodoce/produto-oferta.jpeg",
+               
+               // Dados Fixos (não mudam no gerador simples)
+               fallbackImgCar: "https://peixe123.github.io/pingodoce/pingo-doce-abastecimento2.jpg",
+               fallbackImgPhone: "https://peixe123.github.io/pingodoce/pingodoce_telemóvel-2.png",
+               expiredCouponCount: "ver cupões ativos",
+               expiredOfferTitle: "ver cupões disponíveis",
+               exitLink: "https://www.google.com"
+           };
 
         /* ========================================================================================
-                                      FIM DA ÁREA DE EDIÇÃO DO ADMIN
+                                      FIM DA ÁREA DE COLAGEM
            ======================================================================================== */
         
-        // --- NÃO MEXA DAQUI PARA BAIXO (LÓGICA DO SISTEMA) ---
-
         function checkExpirationState(startStr, endStr) {
             const now = new Date();
             const end = new Date(endStr);
@@ -332,7 +313,6 @@
         }
 
         function updateBadgeOnly() {
-            const isExpired = checkExpirationState(appData.promoStart, appData.promoEnd);
             renderApp();
         }
 
@@ -381,7 +361,6 @@
         let gearClickCount = 0;
         let gearClickTimer = null;
         
-        // --- LÓGICA DE CLIQUE: 4 TOQUES EM 3 SEGUNDOS ---
         function handleGearClick() {
             gearClickCount++;
             if (gearClickCount === 1) {
@@ -442,7 +421,6 @@
                 prodImgEl.style.padding = "0";
 
                 prodInfoContainer.style.padding = "12px 15px";
-                // INSERE O TEXTO DO BOTÃO DINAMICAMENTE
                 prodInfoContainer.innerHTML = `
                     <div id="displayProdDate" class="prod-date-badge"></div>
                     <div class="prod-desc" id="displayProdDesc">${appData.prodDesc}</div>
@@ -453,8 +431,7 @@
                 if(btnEl) {
                     btnEl.style.backgroundColor = appData.btnBg;
                     btnEl.style.color = appData.btnColor;
-                    btnEl.style.fontWeight = appData.btnBold ? 'bold' : 'normal';
-                    btnEl.style.fontStyle = appData.btnItalic ? 'italic' : 'normal';
+                    btnEl.style.fontWeight = "bold";
                 }
 
                 const dateEl = document.getElementById('displayProdDate');
@@ -464,14 +441,12 @@
                     if (badgeText.startsWith("Expira")) {
                         dateEl.style.backgroundColor = appData.badgeBg;
                         dateEl.style.color = appData.badgeColor;
-                        dateEl.style.fontWeight = appData.badgeBold ? 'bold' : 'normal';
-                        dateEl.style.fontStyle = appData.badgeItalic ? 'italic' : 'normal';
+                        dateEl.style.fontWeight = "bold";
                         dateEl.style.padding = "4px 10px";
                     } else {
                         dateEl.style.backgroundColor = "transparent";
                         dateEl.style.color = "#666";
                         dateEl.style.fontWeight = "normal";
-                        dateEl.style.fontStyle = "normal";
                         dateEl.style.padding = "0";
                     }
                 }
@@ -524,6 +499,12 @@
             }
         }
 
+        function openGenerator() {
+            // Fecha painel admin e abre o gerador
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('generatorModal').style.display = 'flex';
+        }
+
         function saveUserData() {
             const newUserPrefs = {
                 cardImg: document.getElementById('adminCardImg').value,
@@ -539,6 +520,52 @@
             renderApp();
             toggleAdmin(false);
             showAlert("Preferências salvas!", 'success');
+        }
+
+        // --- FUNÇÃO GERADORA DE CÓDIGO ---
+        function generatePromoCode() {
+            const start = document.getElementById('genStart').value;
+            const end = document.getElementById('genEnd').value;
+            const btnText = document.getElementById('genBtnText').value || "Ver código";
+            const prodDesc = document.getElementById('genProdDesc').value || "Produto...";
+            const prodImg = document.getElementById('genProdImg').value || "";
+
+            if(!start || !end) {
+                showAlert("Preencha as datas!", "warning");
+                return;
+            }
+
+            const generated = `const serverStyle = {
+       promoStart: "${start}",
+       promoEnd: "${end}",
+       badgeBg: "#fce4ec",
+       badgeColor: "#c62828",
+       btnBg: "#5e8e3e",
+       btnColor: "#ffffff",
+       btnText: "${btnText}"
+   };
+   
+   const serverData = {
+       couponCount: "1 cupão ativo",
+       offerTitle: "Mais 2 cupões disponíveis",
+       sectionTitle: "Cupões Pingo Doce",
+       prodDesc: "${prodDesc}",
+       prodImg: "${prodImg}",
+       
+       // Dados Fixos (não mudam no gerador simples)
+       fallbackImgCar: "https://peixe123.github.io/pingodoce/pingo-doce-abastecimento2.jpg",
+       fallbackImgPhone: "https://peixe123.github.io/pingodoce/pingodoce_telemóvel-2.png",
+       expiredCouponCount: "ver cupões ativos",
+       expiredOfferTitle: "ver cupões disponíveis",
+       exitLink: "https://www.google.com"
+   };`;
+
+            const area = document.getElementById('generatedCode');
+            area.style.display = 'block';
+            area.value = generated;
+            area.select();
+            document.execCommand('copy');
+            showAlert("Código copiado! Cole no topo do arquivo.", "success");
         }
     </script>
 </body>
